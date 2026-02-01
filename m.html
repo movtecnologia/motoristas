@@ -1,65 +1,146 @@
-<script>
-  const sheetId = "1mXUWt1Swe5CLABggNXLxGPk-0NemX2EQEqQk7nBBMF0";
-  const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?gid=0&tqx=out:json`;
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Identificação do Motorista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  const params = new URLSearchParams(window.location.search);
-  const idBuscado = String(params.get("id") || "").trim();
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    img {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 10px 0;
+    }
+    .status {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .ativo {
+      background: #28a745;
+      color: #ffffff;
+    }
+    .inativo {
+      background: #dc3545;
+      color: #ffffff;
+    }
+    .erro {
+      color: #dc3545;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .rodape {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
+</head>
 
-  const conteudo = document.getElementById("conteudo");
+<body>
 
-  if (!idBuscado) {
-    conteudo.innerHTML = "<div class='erro'>ID não informado</div>";
-  } else {
-    fetch(sheetUrl)
-      .then(res => res.text())
-      .then(text => {
-        const json = JSON.parse(text.substring(47, text.length - 2));
-        const rows = json.table.rows;
+  <div class="container">
+    <div class="logo">MOV Tecnologia</div>
 
-        let achou = false;
+    <div id="conteudo">Carregando...</div>
 
-        rows.forEach(r => {
-          if (!r.c || !r.c[0]) return;
+    <div class="rodape">Consulta em tempo real</div>
+  </div>
 
-          const id = String(r.c[0].v).trim();
-          if (id !== idBuscado) return;
+  <script>
+    (function () {
+      const conteudo = document.getElementById("conteudo");
 
-          achou = true;
+      const sheetId = "1mXUWt1Swe5CLABggNXLxGPk-0NemX2EQEqQk7nBBMF0";
+      const url = "https://docs.google.com/spreadsheets/d/" + sheetId + "/gviz/tq?gid=0&tqx=out:json";
 
-          const nome = String(r.c[1]?.v || "").trim();
-          const foto = String(r.c[2]?.v || "").trim();
+      const params = new URLSearchParams(window.location.search);
+      const idBuscado = (params.get("id") || "").trim();
 
-          const statusRaw = String(r.c[3]?.v || "").trim().toLowerCase();
-          const isAtivo = statusRaw === "ativo";
+      if (!idBuscado) {
+        conteudo.innerHTML = "<div class='erro'>ID não informado</div>";
+        return;
+      }
 
-          const veiculo = String(r.c[4]?.v || "").trim();
-          const placa = String(r.c[5]?.v || "").trim();
-          const cor = String(r.c[6]?.v || "").trim();
+      fetch(url)
+        .then(r => r.text())
+        .then(text => {
+          const json = JSON.parse(text.substring(47, text.length - 2));
+          const rows = json.table.rows;
 
-          const classe = isAtivo ? "ativo" : "inativo";
-          const texto = isAtivo ? "MOTORISTA ATIVO" : "MOTORISTA INATIVO";
+          let achou = false;
 
-          conteudo.innerHTML = `
-            <img src="${foto || 'https://via.placeholder.com/160'}" alt="Foto do motorista">
-            <h1>${nome}</h1>
+          rows.forEach(r => {
+            if (!r.c || !r.c[0]) return;
 
-            <div style="font-size:14px; text-align:left; margin-top:10px">
-              <p><strong>Veículo:</strong> ${veiculo || "-"}</p>
-              <p><strong>Placa:</strong> ${placa || "-"}</p>
-              <p><strong>Cor:</strong> ${cor || "-"}</p>
-            </div>
+            const id = String(r.c[0].v || "").trim();
+            if (id !== idBuscado) return;
 
-            <div class="status ${classe}">${texto}</div>
-          `;
+            achou = true;
+
+            const nome = String(r.c[1]?.v || "").trim();
+            const foto = String(r.c[2]?.v || "").trim();
+            const statusRaw = String(r.c[3]?.v || "").trim().toLowerCase();
+
+            const veiculo = String(r.c[4]?.v || "").trim();
+            const placa = String(r.c[5]?.v || "").trim();
+            const cor = String(r.c[6]?.v || "").trim();
+
+            const isAtivo = statusRaw === "ativo";
+            const classe = isAtivo ? "ativo" : "inativo";
+            const texto = isAtivo ? "MOTORISTA ATIVO" : "MOTORISTA INATIVO";
+
+            conteudo.innerHTML = `
+              <img src="${foto || 'https://via.placeholder.com/160'}">
+              <h1>${nome}</h1>
+
+              <div style="font-size:14px;text-align:left;margin-top:10px">
+                <p><strong>Veículo:</strong> ${veiculo || "-"}</p>
+                <p><strong>Placa:</strong> ${placa || "-"}</p>
+                <p><strong>Cor:</strong> ${cor || "-"}</p>
+              </div>
+
+              <div class="status ${classe}">${texto}</div>
+            `;
+          });
+
+          if (!achou) {
+            conteudo.innerHTML = "<div class='erro'>Motorista não encontrado</div>";
+          }
+        })
+        .catch(() => {
+          conteudo.innerHTML = "<div class='erro'>Erro ao carregar dados</div>";
         });
+    })();
+  </script>
 
-        if (!achou) {
-          conteudo.innerHTML = "<div class='erro'>Motorista não encontrado</div>";
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        conteudo.innerHTML = "<div class='erro'>Erro ao carregar dados</div>";
-      });
-  }
-</script>
+</body>
+</html>
