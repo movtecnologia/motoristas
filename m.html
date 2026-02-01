@@ -2,11 +2,135 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Teste GitHub Pages</title>
+  <title>Identificação do Motorista</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    img {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 10px 0;
+    }
+    .status {
+      font-size: 20px;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+    .ativo {
+      background: #28a745;
+      color: #ffffff;
+    }
+    .inativo {
+      background: #dc3545;
+      color: #ffffff;
+    }
+    .erro {
+      color: #dc3545;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .rodape {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #666;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>FUNCIONOU</h1>
-  <p>GitHub Pages está exibindo HTML corretamente.</p>
+
+  <div class="container">
+    <div class="logo">MOV Tecnologia</div>
+
+    <div id="conteudo">Carregando...</div>
+
+    <div class="rodape">
+      Consulta em tempo real
+    </div>
+  </div>
+
+  <script>
+    const sheetId = "1mXUWt1Swe5CLABggNXLxGPk-0NemX2EQEqQk7nBBMF0";
+    const sheetUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?gid=0&tqx=out:json`;
+
+    const params = new URLSearchParams(window.location.search);
+    const idBuscado = params.get("id");
+
+    const conteudo = document.getElementById("conteudo");
+
+    if (!idBuscado) {
+      conteudo.innerHTML = "<div class='erro'>ID não informado</div>";
+    } else {
+      fetch(sheetUrl)
+        .then(r => r.text())
+        .then(text => {
+          const json = JSON.parse(text.substring(47, text.length - 2));
+          const rows = json.table.rows;
+
+          let achou = false;
+
+          rows.forEach((r, index) => {
+            if (index === 0) return; // ignora cabeçalho
+            if (!r.c || !r.c[0]) return;
+
+            const id = r.c[0].v.toString();
+            if (id === idBuscado) {
+              achou = true;
+
+              const nome = r.c[1]?.v || "";
+              const foto = r.c[2]?.v || "";
+              const status = r.c[3]?.v || "";
+
+              const classe = status === "ATIVO" ? "ativo" : "inativo";
+              const texto = status === "ATIVO"
+                ? "MOTORISTA ATIVO"
+                : "MOTORISTA INATIVO";
+
+              conteudo.innerHTML = `
+                <img src="${foto}" alt="Foto do motorista">
+                <h1>${nome}</h1>
+                <div class="status ${classe}">${texto}</div>
+              `;
+            }
+          });
+
+          if (!achou) {
+            conteudo.innerHTML = "<div class='erro'>Motorista não encontrado</div>";
+          }
+        })
+        .catch(() => {
+          conteudo.innerHTML = "<div class='erro'>Erro ao carregar dados</div>";
+        });
+    }
+  </script>
+
 </body>
 </html>
-
