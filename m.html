@@ -121,17 +121,22 @@ rows.forEach(r => {
 }
 
 
-                const nome = r.c[1]?.v || "";
-const foto = r.c[2]?.v || "";
-const status = r.c[3]?.v || "";
+                const nome = String(r.c[1]?.v || "").trim();
+const foto = String(r.c[2]?.v || "").trim();
 
-const veiculo = r.c[4]?.v || "";
-const placa = r.c[5]?.v || "";
-const cor = r.c[6]?.v || "";
+// status vindo da planilha (ativo / inativo)
+const statusRaw = String(r.c[3]?.v || "").trim().toLowerCase();
+const isAtivo = statusRaw === "ativo";
 
+const veiculo = String(r.c[4]?.v || "").trim();
+const placa = String(r.c[5]?.v || "").trim();
+const cor = String(r.c[6]?.v || "").trim();
 
-              const classe = status === "ATIVO" ? "ativo" : "inativo";
-              const texto = status === "ATIVO"
+const classe = isAtivo ? "ativo" : "inativo";
+const texto = isAtivo
+  ? "MOTORISTA ATIVO"
+  : "MOTORISTA INATIVO";
+
                 ? "MOTORISTA ATIVO"
                 : "MOTORISTA INATIVO";
 
