@@ -97,6 +97,13 @@
 
           let achou = false;
 
+          console.log("IDs encontrados na planilha:");
+rows.forEach(r => {
+  if (r.c && r.c[0]) {
+    console.log(String(r.c[0].v));
+  }
+});
+
           rows.forEach(r => {
   if (!r.c || !r.c[0]) return;
 
@@ -104,7 +111,15 @@
 
   if (id === String(idBuscado).trim()) {
 
-              achou = true;
+              achou = true;if (!achou) {
+  conteudo.innerHTML = `
+    <div class="erro">Motorista não encontrado</div>
+    <div style="font-size:12px;color:#666;margin-top:10px">
+      Verifique se o ID existe na planilha
+    </div>
+  `;
+}
+
 
               const nome = r.c[1]?.v || "";
               const foto = r.c[2]?.v || "";
