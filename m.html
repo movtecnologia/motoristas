@@ -97,9 +97,8 @@
 
           let achou = false;
 
-          rows.forEach((r, index) => {
-            if (index === 0) return; // ignora cabeçalho
-            if (!r.c || !r.c[0]) return;
+          rows.forEach(r => {
+  if (!r.c || !r.c[0]) return;
 
             const id = r.c[0].v.toString();
             if (id === idBuscado) {
