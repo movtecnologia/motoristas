@@ -100,8 +100,10 @@
           rows.forEach(r => {
   if (!r.c || !r.c[0]) return;
 
-            const id = r.c[0].v.toString();
-            if (id === idBuscado) {
+  const id = String(r.c[0].v).trim();
+
+  if (id === String(idBuscado).trim()) {
+
               achou = true;
 
               const nome = r.c[1]?.v || "";
