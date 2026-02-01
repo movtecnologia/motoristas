@@ -121,9 +121,14 @@ rows.forEach(r => {
 }
 
 
-              const nome = r.c[1]?.v || "";
-              const foto = r.c[2]?.v || "";
-              const status = r.c[3]?.v || "";
+                const nome = r.c[1]?.v || "";
+const foto = r.c[2]?.v || "";
+const status = r.c[3]?.v || "";
+
+const veiculo = r.c[4]?.v || "";
+const placa = r.c[5]?.v || "";
+const cor = r.c[6]?.v || "";
+
 
               const classe = status === "ATIVO" ? "ativo" : "inativo";
               const texto = status === "ATIVO"
@@ -131,10 +136,18 @@ rows.forEach(r => {
                 : "MOTORISTA INATIVO";
 
               conteudo.innerHTML = `
-                <img src="${foto}" alt="Foto do motorista">
-                <h1>${nome}</h1>
-                <div class="status ${classe}">${texto}</div>
-              `;
+  <img src="${foto}" alt="Foto do motorista">
+  <h1>${nome}</h1>
+
+  <div style="font-size:14px; text-align:left; margin-top:10px">
+    <p><strong>Veículo:</strong> ${veiculo}</p>
+    <p><strong>Placa:</strong> ${placa}</p>
+    <p><strong>Cor:</strong> ${cor}</p>
+  </div>
+
+  <div class="status ${classe}">${texto}</div>
+`;
+
             }
           });
 
